@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventSchool - School Event Management Platform</title>
+  <style>
+    /* CSS Variables & Design System (Orange Theme: #F97316, White: #FFFFFF, Light Orange: #FED7AA) */
+    :root {
+      --primary: #f97316;
+      --primary-hover: #ea580c;
+      --primary-light: #ffedd5;
+      --primary-accent: #fed7aa;
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-sidebar: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+      --transition: all 0.2s ease-in-out;
+    }
+
+    [data-theme="dark"] {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-sidebar: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --primary-light: rgba(249, 115, 22, 0.15);
+      --primary-accent: #9a3412;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: var(--transition);
+    }
+
+    .brand {
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 1rem 0.75rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.75rem 1rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.925rem;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .role-badge-box {
+      padding: 1rem;
+      border-top: 1px solid var(--border-color);
+      background-color: rgba(0,0,0,0.02);
+    }
+
+    .role-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .role-selector {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .main-wrapper {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .top-bar {
+      height: 64px;
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+      width: 320px;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      color: var(--text-main);
+      width: 100%;
+      font-size: 0.875rem;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--border-color);
+    }
+
+    .content-container {
+      padding: 2rem;
+      flex: 1;
+    }
+
+    .page-section {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 2px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 4px 0;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .stat-icon {
+      padding: 10px;
+      border-radius: 10px;
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 240px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .event-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .event-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-accent);
+    }
+
+    .event-card-header {
+      padding: 1rem;
+      background: var(--primary-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .badge-academic { background: #dbeafe; color: #1e40af; }
+    .badge-cultural { background: #fce7f3; color: #9d174d; }
+    .badge-sports { background: #dcfce7; color: #166534; }
+    .badge-workshop { background: #fef3c7; color: #92400e; }
+    .badge-meeting { background: #e0e7ff; color: #3730a3; }
+
+    .status-badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .status-open { background: #22c55e; color: white; }
+    .status-planning { background: #eab308; color: white; }
+    .status-completed { background: #64748b; color: white; }
+
+    .event-card-body {
+      padding: 1.25rem;
+      flex: 1;
+    }
+
+    .event-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .event-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .event-card-footer {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: var(--bg-main);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .calendar-day-head {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 8px;
+    }
+
+    .calendar-day {
+      min-height: 80px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px;
+      font-size: 0.8rem;
+    }
+
+    .calendar-day-number {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .calendar-event-tag {
+      background: var(--primary);
+      color: white;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .gallery-item {
+      height: 140px;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-end;
+      padding: 10px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      border-left: 4px solid var(--primary);
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: var(--shadow-lg);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <span>EventSchool</span>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item"><a class="nav-link active" onclick="switchSection('dashboard', this)"><span>Dashboard</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('events', this)"><span>Events Directory</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('calendar', this)"><span>Calendar</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('registrations', this)"><span>Registrations</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('resources', this)"><span>Resources</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('volunteers', this)"><span>Volunteers</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('budget', this)"><span>Budget Tracker</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('gallery', this)"><span>Gallery</span></a></li>
+      <li class="nav-item"><a class="nav-link" onclick="switchSection('reports', this)"><span>Reports</span></a></li>
+    </ul>
+
+    <div class="role-badge-box">
+      <div class="role-title">Active Role</div>
+      <select class="role-selector" id="roleSelect" onchange="changeRole(this.value)">
+        <option value="Admin">Administrator</option>
+        <option value="Coordinator">Event Coordinator</option>
+        <option value="Volunteer">Volunteer</option>
+      </select>
+    </div>
+  </nav>
+
+  <!-- Main Area -->
+  <div class="main-wrapper">
+    <header class="top-bar">
+      <div class="search-box">
+        <input type="text" placeholder="Search events, venues..." id="globalSearch" onkeyup="handleGlobalSearch(this.value)">
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" title="Toggle Theme" onclick="toggleTheme()">☀️</button>
+        <button class="btn-primary" onclick="openCreateModal()">+ New Event</button>
+      </div>
+    </header>
+
+    <main class="content-container">
+
+      <!-- SECTION 1: DASHBOARD -->
+      <section id="dashboard" class="page-section active">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Campus Event Overview</h1>
+            <p class="section-subtitle">Welcome back! Manage school events, schedules, and budgets.</p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Upcoming Events</div>
+              <div class="stat-value" id="statUpcoming">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Total Registrations</div>
+              <div class="stat-value" id="statRegistrations">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Total Budget Allocated</div>
+              <div class="stat-value" id="statBudget">₹0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Active Volunteers</div>
+              <div class="stat-value" id="statVolunteers">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-title">Registration Trends</div>
+            <div class="chart-container"><canvas id="trendChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Event Categories</div>
+            <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Recent Activity Log</div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>Time</th><th>Activity</th><th>Module</th><th>User Role</th></tr>
+              </thead>
+              <tbody id="activityTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: EVENTS DIRECTORY -->
+      <section id="events" class="page-section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Events Directory</h1>
+            <p class="section-subtitle">Search, filter, and manage all school events.</p>
+          </div>
+          <button class="btn-primary" onclick="openCreateModal()">+ Create Event</button>
+        </div>
+
+        <div class="card" style="margin-bottom: 1rem; padding: 1rem;">
+          <div class="form-row">
+            <div>
+              <label class="form-label">Category</label>
+              <select class="form-control" id="filterCategory" onchange="renderEventsList()">
+                <option value="All">All Categories</option>
+                <option value="Academic">Academic</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Sports">Sports</option>
+                <option value="Workshop">Workshop</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Status</label>
+              <select class="form-control" id="filterStatus" onchange="renderEventsList()">
+                <option value="All">All Statuses</option>
+                <option value="Open for Registration">Open for Registration</option>
+                <option value="Planning">Planning</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="events-grid" id="eventsListGrid"></div>
+      </section>
+
+      <!-- SECTION 3: CALENDAR -->
+      <section id="calendar" class="page-section">
+        <div class="section-header">
+          <h1 class="section-title">Event Calendar (November 2026)</h1>
+        </div>
+        <div class="card">
+          <div class="calendar-grid">
+            <div class="calendar-day-head">Sun</div><div class="calendar-day-head">Mon</div><div class="calendar-day-head">Tue</div>
+            <div class="calendar-day-head">Wed</div><div class="calendar-day-head">Thu</div><div class="calendar-day-head">Fri</div>
+            <div class="calendar-day-head">Sat</div>
+          </div>
+          <div class="calendar-grid" id="calendarDays"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: REGISTRATIONS -->
+      <section id="registrations" class="page-section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Student Registrations</h1>
+            <p class="section-subtitle">Manage student registrations and check-ins.</p>
+          </div>
+          <button class="btn-primary" onclick="openRegisterModal()">+ Register Student</button>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>Student Name</th><th>Type</th><th>Event</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody id="registrationTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: RESOURCES -->
+      <section id="resources" class="page-section">
+        <div class="section-header"><h1 class="section-title">Resources & Venue Management</h1></div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Resource Name</th><th>Type</th><th>Assigned Event</th><th>Status</th></tr></thead>
+              <tbody id="resourceTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: VOLUNTEERS -->
+      <section id="volunteers" class="page-section">
+        <div class="section-header"><h1 class="section-title">Volunteer Coordination</h1></div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Volunteer Name</th><th>Assigned Task</th><th>Event</th><th>Status</th></tr></thead>
+              <tbody id="volunteerTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 7: BUDGET TRACKER (INR Currency) -->
+      <section id="budget" class="page-section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Budget Tracking (₹ INR)</h1>
+            <p class="section-subtitle">Monitor expenses, revenues, and event budget balance in Rupees.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Event Name</th>
+                  <th>Allocated Budget (₹)</th>
+                  <th>Actual Expenses (₹)</th>
+                  <th>Remaining Balance (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="budgetTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8: GALLERY -->
+      <section id="gallery" class="page-section">
+        <div class="section-header"><h1 class="section-title">Event Photo Gallery</h1></div>
+        <div class="gallery-grid" id="galleryContainer"></div>
+      </section>
+
+      <!-- SECTION 9: REPORTS -->
+      <section id="reports" class="page-section">
+        <div class="section-header"><h1 class="section-title">Reports & Export</h1></div>
+        <div class="card">
+          <p style="margin-bottom:1rem; color:var(--text-muted);">Download a full report of all events and budget breakdowns in CSV format.</p>
+          <button class="btn-primary" onclick="exportDataCSV()">Export All Events (CSV)</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- CREATE / EDIT EVENT MODAL -->
+  <div class="modal-backdrop" id="eventModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Create New Event</h3>
+        <button onclick="closeModal()" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">&times;</button>
+      </div>
+      <form id="eventForm" onsubmit="handleSaveEvent(event)">
+        <input type="hidden" id="eventId">
+        <div class="form-group">
+          <label class="form-label">Event Title</label>
+          <input type="text" class="form-control" id="formTitle" required placeholder="e.g. Science Exhibition">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-control" id="formCategory">
+              <option value="Academic">Academic</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Sports">Sports</option>
+              <option value="Workshop">Workshop</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" id="formStatus">
+              <option value="Open for Registration">Open for Registration</option>
+              <option value="Planning">Planning</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" id="formDate" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Time</label>
+            <input type="time" class="form-control" id="formTime" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Venue</label>
+          <input type="text" class="form-control" id="formVenue" required placeholder="e.g. Main Auditorium">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Budget (₹ INR)</label>
+          <input type="number" class="form-control" id="formBudget" required placeholder="e.g. 50000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" id="formDescription" rows="3"></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:1rem;">
+          <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- REGISTER STUDENT MODAL -->
+  <div class="modal-backdrop" id="registerModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Register Student for Event</h3>
+        <button onclick="closeRegisterModal()" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">&times;</button>
+      </div>
+      <form onsubmit="handleSaveRegistration(event)">
+        <div class="form-group">
+          <label class="form-label">Student Name</label>
+          <input type="text" class="form-control" id="regStudentName" required placeholder="e.g. Rahul Sharma">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Event</label>
+          <select class="form-control" id="regEventSelect" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Participant Role</label>
+          <select class="form-control" id="regStudentType">
+            <option value="Student">Student</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Parent">Parent</option>
+          </select>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:1rem;">
+          <button type="button" class="btn-secondary" onclick="closeRegisterModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // Indian Currency Formatter Helper Function
+    function formatINR(amount) {
+      return '₹' + Number(amount || 0).toLocaleString('en-IN');
+    }
+
+    const defaultEvents = [
+      { id: '1', title: 'Annual Science & Tech Expo', category: 'Academic', status: 'Open for Registration', date: '2026-11-15', time: '09:00', venue: 'Main Exhibition Hall', budget: 250000, desc: 'Showcasing innovative student STEM projects and guest keynote speakers.' },
+      { id: '2', title: 'Inter-School Football Championship', category: 'Sports', status: 'Planning', date: '2026-11-20', time: '14:00', venue: 'Sports Ground', budget: 180000, desc: 'Tournament matches between regional school teams.' },
+      { id: '3', title: 'Cultural Dance & Music Festival', category: 'Cultural', status: 'Open for Registration', date: '2026-11-28', time: '17:30', venue: 'Campus Auditorium', budget: 320000, desc: 'An evening of classical and modern artistic performances.' },
+      { id: '4', title: 'Rangoli & Art Competition', category: 'Cultural', status: 'In Progress', date: '2026-11-05', time: '10:00', venue: 'Open Quadrangle', budget: 120000, desc: 'Creative arts festival showcasing traditional floor art.' }
+    ];
+
+    const defaultRegistrations = [
+      { name: 'Aarav Kumar', type: 'Student', event: 'Annual Science & Tech Expo', status: 'Checked In' },
+      { name: 'Priya Sharma', type: 'Student', event: 'Annual Science & Tech Expo', status: 'Registered' },
+      { name: 'Rohan Verma', type: 'Student', event: 'Inter-School Football Championship', status: 'Checked In' },
+      { name: 'Ananya Patel', type: 'Student', event: 'Cultural Dance & Music Festival', status: 'Registered' }
+    ];
+
+    const defaultResources = [
+      { name: 'Main Auditorium', type: 'Venue', event: 'Cultural Dance & Music Festival', status: 'Reserved' },
+      { name: 'Sound System & Microphones', type: 'Equipment', event: 'Annual Science & Tech Expo', status: 'Allocated' },
+      { name: 'Sports Field Stage', type: 'Structure', event: 'Inter-School Football Championship', status: 'Allocated' }
+    ];
+
+    const defaultVolunteers = [
+      { name: 'Aditya Singh', task: 'Stage Management', event: 'Cultural Dance & Music Festival', status: 'Assigned' },
+      { name: 'Sneha Reddy', task: 'Registration Desk', event: 'Annual Science & Tech Expo', status: 'Active' }
+    ];
+
+    const defaultActivities = [
+      { time: 'Just now', text: 'New student registration added for Science & Tech Expo', module: 'Registrations', role: 'Student' },
+      { time: '1 hour ago', text: 'Event budget updated to ₹2,50,000', module: 'Events', role: 'Admin' }
+    ];
+
+    function loadData(key, fallback) {
+      try {
+        const stored = localStorage.getItem('eventschool_inr_' + key);
+        if (!stored) return fallback;
+        const parsed = JSON.parse(stored);
+        return (Array.isArray(parsed) && parsed.length > 0) ? parsed : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function saveData(key, data) {
+      localStorage.setItem('eventschool_inr_' + key, JSON.stringify(data));
+    }
+
+    let eventsData = loadData('events', defaultEvents);
+    let regData = loadData('regs', defaultRegistrations);
+    let resData = loadData('res', defaultResources);
+    let volData = loadData('vols', defaultVolunteers);
+    let actData = loadData('acts', defaultActivities);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderDashboard();
+      renderEventsList();
+      renderCalendar();
+      renderRegistrations();
+      renderResources();
+      renderVolunteers();
+      renderBudget();
+      renderGallery();
+      renderActivityTable();
+    });
+
+    function switchSection(sectionId, element) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      
+      const target = document.getElementById(sectionId);
+      if (target) target.classList.add('active');
+      
+      if (element) {
+        element.classList.add('active');
+      } else {
+        const link = document.querySelector(`.nav-link[onclick*="${sectionId}"]`);
+        if (link) link.classList.add('active');
+      }
+
+      if (sectionId === 'dashboard') renderDashboard();
+    }
+
+    function changeRole(role) {
+      showToast(`Switched active role to ${role}`);
+      logActivity(`Switched role to ${role}`, 'System', role);
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      showToast(`Switched to ${isDark ? 'Light' : 'Dark'} mode`);
+      renderDashboard();
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerText = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function logActivity(text, module, role = 'Admin') {
+      actData.unshift({ time: 'Just now', text, module, role });
+      if (actData.length > 8) actData.pop();
+      saveData('acts', actData);
+      renderActivityTable();
+    }
+
+    function renderActivityTable() {
+      const tbody = document.getElementById('activityTable');
+      if (!tbody) return;
+      tbody.innerHTML = actData.map(a => `
+        <tr>
+          <td style="color:var(--text-muted); font-size:0.8rem;">${a.time}</td>
+          <td>${a.text}</td>
+          <td><span class="badge badge-academic">${a.module}</span></td>
+          <td><strong>${a.role}</strong></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderDashboard() {
+      document.getElementById('statUpcoming').innerText = eventsData.filter(e => e.status !== 'Completed').length;
+      document.getElementById('statRegistrations').innerText = regData.length;
+      
+      const totalBudget = eventsData.reduce((acc, curr) => acc + Number(curr.budget || 0), 0);
+      document.getElementById('statBudget').innerText = formatINR(totalBudget);
+      
+      document.getElementById('statVolunteers').innerText = volData.length;
+
+      drawTrendChart();
+      drawCategoryChart();
+    }
+
+    function drawTrendChart() {
+      const canvas = document.getElementById('trendChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width = canvas.parentElement.clientWidth;
+      const height = canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const points = [15, 25, 30, 45, 60, 80, 110];
+      const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const max = 120;
+
+      ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border-color') || '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 4; i++) {
+        const y = (height - 30) / 3 * i + 10;
+        ctx.beginPath();
+        ctx.moveTo(30, y);
+        ctx.lineTo(width - 10, y);
+        ctx.stroke();
+      }
+
+      const stepX = (width - 50) / (points.length - 1);
+      ctx.beginPath();
+      points.forEach((pt, index) => {
+        const x = 30 + index * stepX;
+        const y = height - 20 - (pt / max) * (height - 40);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+
+      ctx.strokeStyle = '#f97316';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      points.forEach((pt, index) => {
+        const x = 30 + index * stepX;
+        const y = height - 20 - (pt / max) * (height - 40);
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted') || '#64748b';
+        ctx.font = '10px sans-serif';
+        ctx.fillText(labels[index], x - 10, height - 5);
+      });
+    }
+
+    function drawCategoryChart() {
+      const canvas = document.getElementById('categoryChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width = canvas.parentElement.clientWidth;
+      const height = canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const categories = {};
+      eventsData.forEach(e => { categories[e.category] = (categories[e.category] || 0) + 1; });
+
+      const keys = Object.keys(categories);
+      const total = eventsData.length || 1;
+      const colors = ['#f97316', '#3b82f6', '#10b981', '#ec4899'];
+
+      let startAngle = 0;
+      const centerX = width / 3;
+      const centerY = height / 2;
+      const radius = Math.min(width, height) / 2.8;
+
+      keys.forEach((key, index) => {
+        const sliceAngle = (categories[key] / total) * 2 * Math.PI;
+        ctx.fillStyle = colors[index % colors.length];
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+        ctx.closePath();
+        ctx.fill();
+
+        const legendX = width / 1.7;
+        const legendY = 30 + index * 24;
+        ctx.fillRect(legendX, legendY, 12, 12);
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-main') || '#0f172a';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(`${key} (${categories[key]})`, legendX + 20, legendY + 10);
+
+        startAngle += sliceAngle;
+      });
+    }
+
+    function renderEventsList() {
+      const grid = document.getElementById('eventsListGrid');
+      if (!grid) return;
+
+      const catFilter = document.getElementById('filterCategory').value;
+      const statusFilter = document.getElementById('filterStatus').value;
+
+      const filtered = eventsData.filter(e => {
+        const matchCat = catFilter === 'All' || e.category === catFilter;
+        const matchStatus = statusFilter === 'All' || e.status === statusFilter;
+        return matchCat && matchStatus;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No events found matching your filter.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(e => `
+        <div class="event-card">
+          <div class="event-card-header">
+            <span class="badge badge-${e.category.toLowerCase()}">${e.category}</span>
+            <span class="status-badge status-open">${e.status}</span>
+          </div>
+          <div class="event-card-body">
+            <h3 class="event-title">${e.title}</h3>
+            <div class="event-meta">
+              <div>📅 ${e.date} at ${e.time}</div>
+              <div>📍 ${e.venue}</div>
+              <div>💰 Budget: <strong>${formatINR(e.budget)}</strong></div>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted);">${e.desc}</p>
+          </div>
+          <div class="event-card-footer">
+            <button class="btn-secondary" style="font-size:0.75rem; padding:4px 8px;" onclick="editEvent('${e.id}')">Edit</button>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 10px;" onclick="quickRegister('${e.title}')">Register</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handleGlobalSearch(query) {
+      const q = query.toLowerCase();
+      document.querySelectorAll('.event-card').forEach(card => {
+        card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+      });
+    }
+
+    function openCreateModal() {
+      document.getElementById('modalTitle').innerText = 'Create New Event';
+      document.getElementById('eventId').value = '';
+      document.getElementById('eventForm').reset();
+      document.getElementById('eventModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('eventModal').classList.remove('active');
+    }
+
+    function handleSaveEvent(event) {
+      event.preventDefault();
+      const id = document.getElementById('eventId').value;
+      const title = document.getElementById('formTitle').value;
+      const category = document.getElementById('formCategory').value;
+      const status = document.getElementById('formStatus').value;
+      const date = document.getElementById('formDate').value;
+      const time = document.getElementById('formTime').value;
+      const venue = document.getElementById('formVenue').value;
+      const budget = Number(document.getElementById('formBudget').value);
+      const desc = document.getElementById('formDescription').value;
+
+      if (id) {
+        const index = eventsData.findIndex(e => e.id === id);
+        if (index !== -1) eventsData[index] = { id, title, category, status, date, time, venue, budget, desc };
+        showToast(`Updated event: ${title}`);
+      } else {
+        eventsData.push({ id: Date.now().toString(), title, category, status, date, time, venue, budget, desc });
+        showToast(`Created new event: ${title}`);
+      }
+
+      saveData('events', eventsData);
+      closeModal();
+      renderEventsList();
+      renderDashboard();
+      renderCalendar();
+      renderBudget();
+    }
+
+    function editEvent(id) {
+      const e = eventsData.find(item => item.id === id);
+      if (!e) return;
+      document.getElementById('modalTitle').innerText = 'Edit Event';
+      document.getElementById('eventId').value = e.id;
+      document.getElementById('formTitle').value = e.title;
+      document.getElementById('formCategory').value = e.category;
+      document.getElementById('formStatus').value = e.status;
+      document.getElementById('formDate').value = e.date;
+      document.getElementById('formTime').value = e.time;
+      document.getElementById('formVenue').value = e.venue;
+      document.getElementById('formBudget').value = e.budget;
+      document.getElementById('formDescription').value = e.desc;
+      document.getElementById('eventModal').classList.add('active');
+    }
+
+    function quickRegister(eventTitle) {
+      regData.push({ name: 'New Student', type: 'Student', event: eventTitle, status: 'Registered' });
+      saveData('regs', regData);
+      showToast(`Registered for ${eventTitle}`);
+      renderRegistrations();
+      renderDashboard();
+    }
+
+    function openRegisterModal() {
+      const select = document.getElementById('regEventSelect');
+      select.innerHTML = eventsData.map(e => `<option value="${e.title}">${e.title}</option>`).join('');
+      document.getElementById('registerModal').classList.add('active');
+    }
+
+    function closeRegisterModal() {
+      document.getElementById('registerModal').classList.remove('active');
+    }
+
+    function handleSaveRegistration(event) {
+      event.preventDefault();
+      const name = document.getElementById('regStudentName').value;
+      const eventTitle = document.getElementById('regEventSelect').value;
+      const type = document.getElementById('regStudentType').value;
+
+      regData.push({ name, type, event: eventTitle, status: 'Registered' });
+      saveData('regs', regData);
+      showToast(`Registered ${name} successfully!`);
+      closeRegisterModal();
+      renderRegistrations();
+      renderDashboard();
+    }
+
+    function renderCalendar() {
+      const container = document.getElementById('calendarDays');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (let day = 1; day <= 30; day++) {
+        const dateStr = `2026-11-${day < 10 ? '0' + day : day}`;
+        const dayEvents = eventsData.filter(e => e.date === dateStr);
+        const tags = dayEvents.map(e => `<div class="calendar-event-tag">${e.title}</div>`).join('');
+
+        container.innerHTML += `
+          <div class="calendar-day">
+            <div class="calendar-day-number">${day}</div>
+            ${tags}
+          </div>
+        `;
+      }
+    }
+
+    function renderRegistrations() {
+      const tbody = document.getElementById('registrationTable');
+      if (!tbody) return;
+      tbody.innerHTML = regData.map((r, i) => `
+        <tr>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.type}</td>
+          <td>${r.event}</td>
+          <td><span class="badge ${r.status === 'Checked In' ? 'badge-sports' : 'badge-workshop'}">${r.status}</span></td>
+          <td><button class="btn-secondary" style="padding:2px 8px; font-size:0.75rem;" onclick="toggleCheckIn(${i})">Toggle Status</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleCheckIn(index) {
+      regData[index].status = regData[index].status === 'Checked In' ? 'Registered' : 'Checked In';
+      saveData('regs', regData);
+      renderRegistrations();
+      showToast('Status updated');
+    }
+
+    function renderResources() {
+      const tbody = document.getElementById('resourceTable');
+      if (!tbody) return;
+      tbody.innerHTML = resData.map(r => `
+        <tr>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.type}</td>
+          <td>${r.event}</td>
+          <td><span class="badge badge-academic">${r.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderVolunteers() {
+      const tbody = document.getElementById('volunteerTable');
+      if (!tbody) return;
+      tbody.innerHTML = volData.map(v => `
+        <tr>
+          <td><strong>${v.name}</strong></td>
+          <td>${v.task}</td>
+          <td>${v.event}</td>
+          <td><span class="badge badge-sports">${v.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderBudget() {
+      const tbody = document.getElementById('budgetTable');
+      if (!tbody) return;
+      tbody.innerHTML = eventsData.map(e => {
+        const allocated = Number(e.budget || 0);
+        const spent = Math.round(allocated * 0.75);
+        const balance = allocated - spent;
+        return `
+          <tr>
+            <td><strong>${e.title}</strong></td>
+            <td>${formatINR(allocated)}</td>
+            <td>${formatINR(spent)}</td>
+            <td style="color:${balance >= 0 ? '#10b981' : '#ef4444'}; font-weight:700;">${formatINR(balance)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderGallery() {
+      const container = document.getElementById('galleryContainer');
+      if (!container) return;
+      const images = [
+        { title: 'Science Expo 2025', bg: 'linear-gradient(135deg, #f97316, #ea580c)' },
+        { title: 'Annual Sports Day', bg: 'linear-gradient(135deg, #10b981, #059669)' },
+        { title: 'Cultural Festival', bg: 'linear-gradient(135deg, #6366f1, #4f46e5)' },
+        { title: 'Art & Craft Fair', bg: 'linear-gradient(135deg, #ec4899, #db2777)' }
+      ];
+      container.innerHTML = images.map(img => `
+        <div class="gallery-item" style="background:${img.bg}">
+          <span>${img.title}</span>
+        </div>
+      `).join('');
+    }
+
+    function exportDataCSV() {
+      let csv = "ID,Title,Category,Status,Date,Venue,Budget (INR)\n";
+      eventsData.forEach(e => {
+        csv += `"${e.id}","${e.title}","${e.category}","${e.status}","${e.date}","${e.venue}","${e.budget}"\n`;
+      });
+      const link = document.createElement("a");
+      link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
+      link.download = "eventschool_report_inr.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("Report exported in CSV!");
+    }
+  </script>
+</body>
+</html>
