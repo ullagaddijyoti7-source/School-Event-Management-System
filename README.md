@@ -1,2 +1,3 @@
 #Tech Support System
-A website to manage school events and student registrations.
+it is web based application that helps users report technical issues, raise support tickets, and get solutions quickly and efficiently.
+
