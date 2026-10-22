@@ -1,3 +1,3 @@
-#Tech Support System
-it is web based application that helps users report technical issues, raise support tickets, and get solutions quickly and efficiently.
+# School Event Management System 
+A web-based application for managing school events and student registration. It allows users to view upcoming events, register  for events, and manage event information.
 
